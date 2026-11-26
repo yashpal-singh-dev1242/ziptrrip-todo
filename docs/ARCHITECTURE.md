@@ -53,6 +53,15 @@ Todos are stored as a JSON array in `backend/data/todos.json` (created automatic
 - **Dates are plain `YYYY-MM-DD` strings.** This avoids time-zone shifts for due dates; the overdue check compares against today's date in the browser's local time zone.
 - **IDs are UUIDs**, so ids cannot be guessed from creation order.
 
+## Continuous integration
+
+`.github/workflows/ci.yml` runs on every push to `main` and on every pull request, using Node.js 24 on GitHub's Ubuntu runners. It has two independent jobs:
+
+| Job | Steps |
+|---|---|
+| Backend tests | `npm ci`, then `npm test` in `backend/` |
+| Frontend build | `npm ci`, then `npm run build` in `frontend/` (fails if either HTML page does not compile) |
+
 ## Known limitations
 
 - No authentication or user accounts: all todos are shared.

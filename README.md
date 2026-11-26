@@ -1,5 +1,7 @@
 # Todo App
 
+![CI](https://github.com/yashpal-singh-dev1242/ziptrrip-todo/actions/workflows/ci.yml/badge.svg)
+
 A full-stack todo application built for the Ziptrrip Developer Intern challenge.
 
 - **Frontend:** React (Vite), a true multi-page app (not an SPA): one page for the todo list and one for a single todo, selected with a `?id=` query parameter.
