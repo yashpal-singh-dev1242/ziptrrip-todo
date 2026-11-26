@@ -53,6 +53,26 @@ Todos are stored as a JSON array in `backend/data/todos.json` (created automatic
 - **Dates are plain `YYYY-MM-DD` strings.** This avoids time-zone shifts for due dates; the overdue check compares against today's date in the browser's local time zone.
 - **IDs are UUIDs**, so ids cannot be guessed from creation order.
 
+
+## Docker
+
+`docker-compose.yml` runs the whole app as two services:
+
+```
+Browser ──▶ nginx container (:8080 on the host) ──/api──▶ Express container (:4000, internal only)
+                                                              │
+                                                       volume "todo-data" mounted at /data
+```
+
+| Service | Built from | Notes |
+|---|---|---|
+| `backend` | `backend/Dockerfile` | Node 24 (Alpine), production dependencies only, runs as the non-root `node` user. `DATA_FILE` points to `/data/todos.json` inside the volume. Has a health check that calls `/api/health`. |
+| `frontend` | `frontend/Dockerfile` | Multi-stage build: Vite builds both HTML pages, then only the built files are copied into an nginx image. Starts after the backend is healthy. |
+
+`frontend/nginx.conf` serves `index.html` and `todo.html` as separate files (there is no single-page fallback, matching the multi-page design) and proxies `/api/` to the `backend` service.
+
+Data lives in the named volume `todo-data`, so `docker compose down` keeps it and `docker compose down -v` deletes it.
+
 ## Continuous integration
 
 `.github/workflows/ci.yml` runs on every push to `main` and on every pull request, using Node.js 24 on GitHub's Ubuntu runners. It has two independent jobs:
@@ -67,4 +87,4 @@ Todos are stored as a JSON array in `backend/data/todos.json` (created automatic
 - No authentication or user accounts: all todos are shared.
 - JSON-file storage suits a single server instance; it is not designed for multiple instances or high write volume.
 - The list is not paginated.
-- In development the frontend relies on Vite's `/api` proxy. A production deployment would need the built files in `frontend/dist` served by a web server that also routes `/api` to the backend; that setup is not included here.
+- The Docker setup serves the app over plain HTTP on port 8080. TLS, a domain and cloud deployment configuration are not included.

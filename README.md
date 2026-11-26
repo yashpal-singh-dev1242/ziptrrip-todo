@@ -54,6 +54,26 @@ npm run dev
 
 Open `http://localhost:5173/`. In development, Vite forwards requests starting with `/api` to the backend on port 4000, so start the backend first.
 
+
+## Run with Docker
+
+Requires Docker Desktop (or Docker Engine with the Compose plugin). From the repository root:
+
+```bash
+docker compose up --build
+```
+
+Then open `http://localhost:8080/`.
+
+- Two containers start: the Express API, and nginx serving the built frontend and forwarding `/api` requests to the API.
+- Only port `8080` is published to your machine; the API itself is reachable only through nginx.
+- Todos are stored in a named Docker volume (`todo-data`), so they survive restarts and rebuilds.
+
+| Command | Effect |
+|---|---|
+| `docker compose down` | Stop and remove the containers; **data is kept** |
+| `docker compose down -v` | Also delete the data volume (all todos are lost) |
+
 ## Pages
 
 | URL | Page |
